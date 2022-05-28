@@ -19,16 +19,16 @@ w = np.vstack((-1,1,0,mu)) # w=[a,b,c,mu]^T를 매 스텝마다 업데이트
 t = 1
 
 # Dual Interior Point Method
-for k in range(50):
+for k in range(100):
     # SVM 라그랑지안 식: L(x,mu) = 1/2[a,b]@[a,b]^T + sigma(mu_i*g_i)
-    # Dual IPM: delta f + mu@delta g = 0, mu*g + t = 0 (t->0) 
-    # 이를 만족하는 a,b,c,mu 를 Newton Method 로 찾아야함 
+    # Dual IPM: delta f + mu@delta g = 0, mu*g + t = 0 (t->0)
+    # 이를 만족하는 a,b,c,mu 를 Newton Method 로 찾아야함
 
     t = 0.9*t #t->0
     a,b,c,mu = w[0],w[1],w[2],w[3:]
     print(a, b, c)
 
-    # g(w): g_i = si(c-ax-by)+1 
+    # g(w): g_i = si(c-ax-by)+1
     g = c - np.array((a, b)).T @ np.vstack((X.T, Y.T))
     g = S * g.T + 1
 
@@ -49,14 +49,13 @@ for k in range(50):
     # Backtracking line search 로 learning rate 구해 더 빠르게 최적화 시킬수도 있음
     w = w-np.linalg.inv(dR_dw)@R
 
-    # 원래 점들, 결정 경계, 마진 plot 하기 
+    # 결과 plot 하기: 원래 점들, 결정 경계, 마진
     xmin, xmax, ymin, ymax = -5, 10, -5, 10
-    fig = plt.figure()
     plt.grid()
     plt.scatter(X, Y)
     plt.axis([xmin, xmax, ymin, ymax])
     xx = np.linspace(xmin, xmax, 100)
-    plt.plot(xx, np.squeeze(-(a / b) * xx) + (c / b),'r') # 결정경계
+    plt.plot(xx, np.squeeze(-(a / b) * xx) + (c / b),'r')
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c + 1 / b),'b')
-    plt.plot(xx, np.squeeze(-(a / b) * xx) + (c - 1 / b),'b') 
-    fig.canvas.draw();plt.pause(0.5);fig.canvas.flush_events()
+    plt.plot(xx, np.squeeze(-(a / b) * xx) + (c - 1 / b),'b')
+    plt.draw();plt.pause(0.5);plt.close()
