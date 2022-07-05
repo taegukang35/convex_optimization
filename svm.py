@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 # SVM에 사용할 데이터 만들기
-# 50개씩 (7,0), (0,7)에 몰리도록 랜덤하게 생성
-# (0,7)에 가까운 점은 S_i = 1, (7,0)에 가까운 점은 S_i = -1
+# 50개씩 (8,0), (0,8)에 몰리도록 랜덤하게 생성
+# (0,8)에 가까운 점은 S_i = 1, (7,0)에 가까운 점은 S_i = -1
 n = 100
-r1,r2 = np.random.randn(n//2,1),np.random.randn(n//2,1)+7
+r1,r2 = np.random.randn(n//2,1),np.random.randn(n//2,1)+8
 s1,s2 = np.ones((n//2,1)),-np.ones((n//2,1))
 r = np.hstack((np.vstack((r1,r2)),np.vstack((r2,r1))))
 S = np.vstack((s1,s2))
@@ -15,7 +16,10 @@ X,Y = X.reshape(n,1), Y.reshape(n,1)
 
 # 초기값 세팅: 원래는 PhaseⅠ Method로 찾아야 함
 mu = np.ones((n,1)) # mu는 lagrangian multiplier
-w = np.vstack((-1,1,0,mu)) # w=[a,b,c,mu]^T를 매 스텝마다 업데이트
+a = random.uniform(-2,-0.5)
+b = random.uniform(0.75,1.25)
+c = random.uniform(-0.5,0.5)
+w = np.vstack((a,b,c,mu)) # w=[a,b,c,mu]^T를 매 스텝마다 업데이트
 t = 1
 
 # Dual Interior Point Method
@@ -45,9 +49,9 @@ for k in range(100):
     dR_dw22 = np.diag(np.squeeze(g))
     dR_dw = np.block([[dR_dw11,dR_dw12],[dR_dw21,dR_dw22]])
 
-    # Newton method 로 w 업데이트
+    # Newton method 로 w 업데이트, 이때 learning rate 0.5로 설정
     # Backtracking line search 로 learning rate 구해 더 빠르게 최적화 시킬수도 있음
-    w = w-np.linalg.inv(dR_dw)@R
+    w = w-0.5*np.linalg.inv(dR_dw)@R
 
     # 결과 plot 하기: 원래 점들, 결정 경계, 마진
     xmin, xmax, ymin, ymax = -5, 10, -5, 10
@@ -58,4 +62,5 @@ for k in range(100):
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c / b),'r')
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c + 1 / b),'b')
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c - 1 / b),'b')
-    plt.draw();plt.pause(0.5);plt.close()
+    #plt.savefig(f"./svmimgs/{k+300}.png")
+    plt.draw();plt.pause(0.3);plt.close()
