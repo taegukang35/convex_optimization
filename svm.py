@@ -4,7 +4,7 @@ import random
 
 # SVM에 사용할 데이터 만들기
 # 50개씩 (8,0), (0,8)에 몰리도록 랜덤하게 생성
-# (0,8)에 가까운 점은 S_i = 1, (7,0)에 가까운 점은 S_i = -1
+# (0,8)에 가까운 점은 S_i = 1, (8,0)에 가까운 점은 S_i = -1
 n = 100
 r1,r2 = np.random.randn(n//2,1),np.random.randn(n//2,1)+8
 s1,s2 = np.ones((n//2,1)),-np.ones((n//2,1))
@@ -62,5 +62,4 @@ for k in range(100):
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c / b),'r')
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c + 1 / b),'b')
     plt.plot(xx, np.squeeze(-(a / b) * xx) + (c - 1 / b),'b')
-    #plt.savefig(f"./svmimgs/{k+300}.png")
-    plt.draw();plt.pause(0.3);plt.close()
+    plt.draw();plt.pause(0.05);plt.clf()
